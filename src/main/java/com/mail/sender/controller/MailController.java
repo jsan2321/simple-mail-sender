@@ -33,9 +33,9 @@ public class MailController {
     }
 
     @PostMapping("/sendMessageFile")
-    public ResponseEntity<?> receiveRequestEmailWithFile(@ModelAttribute EmailFileDTO emailFileDTO) {
+    public ResponseEntity<?> receiveRequestEmailWithFile(@ModelAttribute EmailFileDTO emailFileDTO) { // get form-data
         try {
-            String fileName = emailFileDTO.getFile().getName();
+            String fileName = emailFileDTO.getFile().getOriginalFilename();
             Path path = Paths.get("src/main/resources/files/" + fileName); // path where the file is saved
             Files.createDirectories(path.getParent());
             Files.copy(emailFileDTO.getFile().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING); // delete duplicate files
@@ -44,7 +44,7 @@ public class MailController {
 
             Map<String, String> response = new HashMap<>();
             response.put("state", "Sent");
-            response.put("file", "fileName");
+            response.put("file", fileName);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             throw new RuntimeException("Error when sending email with file. " + e);
